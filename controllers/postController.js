@@ -1,6 +1,6 @@
 /**
  * Post Controller
- * 
+ *
  * Contains all 'business' logic for handling blog post operations
  * Each function handles a specific API endpoint with proper error handling
  */
@@ -9,10 +9,10 @@ const { Post } = require('../models');
 
 /**
  * Get All Posts
- * 
+ *
  * Retrieves all blog posts from the database
  * Ordered by creation date (newest first)
- * 
+ *
  * route GET /api/posts
  * accessible via Public
  * return Array of all post objects
@@ -23,7 +23,7 @@ const getAllPosts = async (req, res) => {
     const posts = await Post.findAll({
       order: [['createdAt', 'DESC']]
     });
-    
+   
     // Return posts with 200 OK status
     res.status(200).json(posts);
   } catch (error) {
@@ -34,10 +34,10 @@ const getAllPosts = async (req, res) => {
 
 /**
  * Get Post by ID
- * 
+ *
  * Retrieves a single blog post by its ID
  * Returns 404 if post doesn't exist
- * 
+ *
  * Route GET /api/posts/:id
  * accessible via Public
  * param id - Post ID from URL parameter
@@ -47,15 +47,15 @@ const getPostById = async (req, res) => {
   try {
     // Extract ID from URL parameters
     const { id } = req.params;
-    
+   
     // Find post by primary key (ID)
     const post = await Post.findByPk(id);
-    
+   
     // If post doesn't exist, return 404 error
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
-    
+   
     // Return the post with 200 OK status
     res.status(200).json(post);
   } catch (error) {
@@ -66,10 +66,10 @@ const getPostById = async (req, res) => {
 
 /**
  * Create New Post
- * 
+ *
  * Creates a new blog post with provided data
  * Validates that all required fields are present
- * 
+ *
  * Route POST /api/posts
  * accessible via Public
  * param title - Post title (required)
@@ -81,15 +81,15 @@ const createPost = async (req, res) => {
   try {
     // Extract fields from request body
     const { title, content, author } = req.body;
-    
+   
     // Manual validation: Check if all required fields are present
     // This catches missing fields before they reach Sequelize
     if (!title || !content || !author) {
-      return res.status(400).json({ 
-        error: 'All fields are required: title, content, author' 
+      return res.status(400).json({
+        error: 'All fields are required: title, content, author'
       });
     }
-    
+   
     // Create new post in database
     // Sequelize will also validate field constraints (length, etc.)
     const post = await Post.create({
@@ -98,7 +98,7 @@ const createPost = async (req, res) => {
       author
       // published defaults to false (set in model)
     });
-    
+   
     // Return created post with 201 Created status
     res.status(201).json(post);
   } catch (error) {
@@ -108,7 +108,7 @@ const createPost = async (req, res) => {
       const messages = error.errors.map(e => e.message);
       return res.status(400).json({ error: messages.join(', ') });
     }
-    
+   
     // Handle any other unexpected errors
     res.status(500).json({ error: 'Failed to create post' });
   }
@@ -116,10 +116,10 @@ const createPost = async (req, res) => {
 
 /**
  * Update Post
- * 
+ *
  * Updates an existing post with new data
  * Can update any or all fields (title, content, author, published)
- * 
+ *
  * Route PUT /api/posts/:id
  * accessible via Public
  * param id - Post ID from URL parameter
@@ -133,18 +133,18 @@ const updatePost = async (req, res) => {
   try {
     // Extract ID from URL parameters
     const { id } = req.params;
-    
+   
     // Find the post to update
     const post = await Post.findByPk(id);
-    
+   
     // If post doesn't exist, return 404 error
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
-    
+   
     // Extract updated fields from request body
     const { title, content, author, published } = req.body;
-    
+   
     // Update post with new values
     // If a field is undefined (not provided), keep the existing value
     await post.update({
@@ -153,7 +153,7 @@ const updatePost = async (req, res) => {
       author: author !== undefined ? author : post.author,
       published: published !== undefined ? published : post.published
     });
-    
+   
     // Return updated post with 200 OK status
     res.status(200).json(post);
   } catch (error) {
@@ -162,7 +162,7 @@ const updatePost = async (req, res) => {
       const messages = error.errors.map(e => e.message);
       return res.status(400).json({ error: messages.join(', ') });
     }
-    
+   
     // Handle any other unexpected errors
     res.status(500).json({ error: 'Failed to update post' });
   }
@@ -170,10 +170,10 @@ const updatePost = async (req, res) => {
 
 /**
  * Toggle Publish Status
- * 
+ *
  * Toggles the published status of a post
  * If published is true, sets it to false and vice versa
- * 
+ *
  * Route PATCH /api/posts/:id/publish
  * accessible via Public
  * param id - Post ID from URL parameter
@@ -183,21 +183,21 @@ const togglePublish = async (req, res) => {
   try {
     // Extract ID from URL parameters
     const { id } = req.params;
-    
+   
     // Find the post to update
     const post = await Post.findByPk(id);
-    
+   
     // If post doesn't exist, return 404 error
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
-    
+   
     // Toggle the published status
     // If currently true, set to false; if false, set to true
     await post.update({
       published: !post.published
     });
-    
+   
     // Return updated post with 200 OK status
     res.status(200).json(post);
   } catch (error) {
@@ -208,10 +208,10 @@ const togglePublish = async (req, res) => {
 
 /**
  * Delete Post
- * 
+ *
  * Permanently deletes a post from the database
  * Returns 204 No Content on success (no response body)
- * 
+ *
  * Route DELETE /api/posts/:id
  * accessible via Public
  * param id - Post ID from URL parameter
@@ -221,18 +221,18 @@ const deletePost = async (req, res) => {
   try {
     // Extract ID from URL parameters
     const { id } = req.params;
-    
+   
     // Find the post to delete
     const post = await Post.findByPk(id);
-    
+   
     // If post doesn't exist, return 404 error
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
-    
+   
     // Delete the post from database
     await post.destroy();
-    
+   
     // Return 204 No Content (successful deletion, no response body)
     res.status(204).send();
   } catch (error) {

@@ -1,6 +1,6 @@
 /**
  * Index.js think file that runs the whole server
- * 
+ *
  * Main entry point for the Blog RESTful API application
  * Configures Express server, middleware, routes, and database connection
  */
@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 3000;
 
 /**
  * Middleware Configuration
- * 
+ *
  * Middleware functions execute in order for each request
  */
 
@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 
 /**
  * Route Configuration
- * 
+ *
  * Mount route handlers at specific paths
  */
 
@@ -44,7 +44,7 @@ app.use('/api/posts', postRoutes);
 
 /**
  * Health Check Endpoint
- * 
+ *
  * Simple endpoint to verify server is running
  * Useful for monitoring and load balancers
  */
@@ -54,7 +54,7 @@ app.get('/health', (req, res) => {
 
 /**
  * Error Handling Middleware
- * 
+ *
  * Must be defined AFTER all routes
  * notFound catches undefined routes, errorHandler catches errors
  */
@@ -67,7 +67,7 @@ app.use(errorHandler);
 
 /**
  * Server Initialization
- * 
+ *
  * Async function to:
  * 1. Test database connection
  * 2. Synchronize database schema
@@ -77,11 +77,11 @@ const startServer = async () => {
   try {
     // Step 1: Test database connection
     await testConnection();
-    
+   
     // Step 2: Sync database schema with models
     // Creates tables if they don't exist or updates them if needed
     await syncDatabase();
-    
+   
     // Step 3: Start listening for HTTP requests
     app.listen(PORT, () => {
       console.log(`✓ Server is running on port ${PORT}`);
